@@ -9,11 +9,13 @@ BOOL WINAPI ImeInquire(LPIMEINFO lpImeInfo, LPTSTR lpszUIClass, LPCTSTR lpszOpti
 		return FALSE;
 
   lpImeInfo->dwPrivateDataSize	= 0; //sizeof(t_uiExtra);
-	
-	lpImeInfo->fdwProperty				= 0x001E0002; //unicode,not special ui, near caret, cand from 1,kbd char first, IME_PROP_COMPLETE_ON_UNSELECT
-	lpImeInfo->fdwConversionCaps	= 0x00000488;
-	lpImeInfo->fdwSentenceCaps		= 0x00000000;
-	lpImeInfo->fdwUICaps					= 0x00010001;
+
+  lpImeInfo->fdwProperty        = IME_PROP_COMPLETE_ON_UNSELECT | 
+                                  IME_PROP_SPECIAL_UI | IME_PROP_CANDLIST_START_FROM_1 | 
+                                  IME_PROP_UNICODE | IME_PROP_KBD_CHAR_FIRST;
+  lpImeInfo->fdwConversionCaps  = IME_CMODE_SYMBOL | IME_CMODE_SOFTKBD | IME_CMODE_FULLSHAPE;
+	lpImeInfo->fdwSentenceCaps    = IME_SMODE_NONE;
+	lpImeInfo->fdwUICaps          = UI_CAP_SOFTKBD| UI_CAP_2700;
 	lpImeInfo->fdwSCSCaps					= 0x00000000;
 	lpImeInfo->fdwSelectCaps			= 0x00000000;
 
