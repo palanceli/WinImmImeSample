@@ -5,23 +5,27 @@
 
 BOOL WINAPI ImeInquire(LPIMEINFO lpImeInfo, LPTSTR lpszUIClass, LPCTSTR lpszOptions)
 {
+  // 如果宿主进程为Winlogon，则直接退出
 	if((DWORD_PTR)lpszOptions & IME_SYSINFO_WINLOGON )
 		return FALSE;
 
   lpImeInfo->dwPrivateDataSize	= 0; //sizeof(t_uiExtra);
 
-  lpImeInfo->fdwProperty        = IME_PROP_COMPLETE_ON_UNSELECT | 
-                                  IME_PROP_SPECIAL_UI | IME_PROP_CANDLIST_START_FROM_1 | 
-                                  IME_PROP_UNICODE | IME_PROP_KBD_CHAR_FIRST;
-  lpImeInfo->fdwConversionCaps  = IME_CMODE_SYMBOL | IME_CMODE_SOFTKBD | IME_CMODE_FULLSHAPE;
-	lpImeInfo->fdwSentenceCaps    = IME_SMODE_NONE;
-	lpImeInfo->fdwUICaps          = UI_CAP_SOFTKBD| UI_CAP_2700;
+  lpImeInfo->fdwProperty  = IME_PROP_COMPLETE_ON_UNSELECT | 
+    IME_PROP_SPECIAL_UI | IME_PROP_CANDLIST_START_FROM_1 |
+    IME_PROP_UNICODE | IME_PROP_KBD_CHAR_FIRST;                 // 输入法属性
+
+  lpImeInfo->fdwConversionCaps  = IME_CMODE_SYMBOL | 
+    IME_CMODE_SOFTKBD | IME_CMODE_FULLSHAPE;                    // 转换模式
+	lpImeInfo->fdwSentenceCaps    = IME_SMODE_NONE;               // 句子模式
+	lpImeInfo->fdwUICaps          = UI_CAP_SOFTKBD| UI_CAP_2700;  // UI标记
 	lpImeInfo->fdwSCSCaps					= 0x00000000;
 	lpImeInfo->fdwSelectCaps			= 0x00000000;
 
+  // 窗体类名
   _tcscpy_s(lpszUIClass, MAX_CLASSNAME_UI, UIWnd::GetUIWndClassName());
 
-	return TRUE; //always true
+	return TRUE;
 }
 
 BOOL WINAPI ImeConfigure(HKL hkl, HWND hWnd, DWORD dwMode, LPVOID lpData)
