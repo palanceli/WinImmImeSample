@@ -114,92 +114,89 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 	LPTSTR szCompString = pComp->GetCompString();
 	int cMsg = 0;
 	COMPOSITIONSTRING& compCore = pComp->GetCore();
-	if(_tcslen(szCompString) == 0){
-		if(HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z'){
-			TCHAR szKey[2] = {HIWORD(unKey), 0};
-			_tcscat_s(szCompString, Comp::c_MaxCompString, szKey);
-			compCore.dwCompStrLen = _tcslen(szCompString);
+	if (HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z') {
+		TCHAR szKey[2] = { HIWORD(unKey), 0 };
+		_tcscat_s(szCompString, Comp::c_MaxCompString, szKey);	// 将字符追加到写作串
+		compCore.dwCompStrLen = _tcslen(szCompString);
+	}
 
+	if(_tcslen(szCompString) == 0){  // 没有写作串
+		if(HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z'){
 			lpdwTransBuf += 1;
-			lpdwTransBuf[0] = WM_IME_STARTCOMPOSITION;
+			lpdwTransBuf[0] = WM_IME_STARTCOMPOSITION;	// 打开写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_COMPOSITION;
+			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_NOTIFY;
+			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 打开候选窗
 			lpdwTransBuf[1] = IMN_OPENCANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_NOTIFY;
+			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 更新候选窗
 			lpdwTransBuf[1] = IMN_CHANGECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
 			cMsg++;
 			return cMsg;
 		}
-	}
-	else{ // _tcslen(szCompString) > 0
+	}else{ // _tcslen(szCompString) > 0			// 有写作串
 		if(HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z'){
-			TCHAR szKey[2] = {HIWORD(unKey), 0};
-			_tcscat_s(szCompString, Comp::c_MaxCompString, szKey);
-			compCore.dwCompStrLen = _tcslen(szCompString);
-
 			lpdwTransBuf += 1;
-			lpdwTransBuf[0] = WM_IME_COMPOSITION;
+			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_NOTIFY;
+			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 更新候选窗
 			lpdwTransBuf[1] = IMN_CHANGECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
 			cMsg++;
 			return cMsg;
-		}else if(HIWORD(unKey) == 0x000D || HIWORD(unKey) == 0x0020){		
+		}else if(HIWORD(unKey) == VK_RETURN || HIWORD(unKey) == VK_SPACE){ // 回车或空格
 			LPTSTR szResultString = pComp->GetResultString();
-			_tcscpy_s(szResultString, Comp::c_MaxResultString, szCompString);
+			_tcscpy_s(szResultString, Comp::c_MaxResultString, szCompString); // 将写作串拷入结果串
 			compCore.dwResultStrLen = _tcslen(szResultString);
-			memset(szCompString, 0, sizeof(TCHAR) * Comp::c_MaxCompString);
+			memset(szCompString, 0, sizeof(TCHAR) * Comp::c_MaxCompString);		// 清空写作串
 			compCore.dwCompStrLen = 0;
 			lpdwTransBuf += 1;
-			lpdwTransBuf[0] = WM_IME_COMPOSITION;
+			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR | GCS_RESULTSTR;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;
+			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;	// 关闭写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_NOTIFY;
+			lpdwTransBuf[0] = WM_IME_NOTIFY;				// 关闭候选窗
 			lpdwTransBuf[1] = IMN_CLOSECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
 			cMsg++;
 			return cMsg;
-		}else if(HIWORD(unKey) == 0x001B){
+		}else if(HIWORD(unKey) == VK_ESCAPE){	// ESC
 			memset(szCompString, 0, sizeof(TCHAR) * Comp::c_MaxCompString);
 			compCore.dwCompStrLen = 0;
 			lpdwTransBuf += 1;
-			lpdwTransBuf[0] = WM_IME_COMPOSITION;
+			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;
+			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;	// 关闭写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
 			cMsg++;
-			lpdwTransBuf[0] = WM_IME_NOTIFY;
+			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 关闭候选窗
 			lpdwTransBuf[1] = IMN_CLOSECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
