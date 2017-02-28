@@ -93,24 +93,17 @@ BOOL WINAPI ImeSetActiveContext(HIMC hImc, BOOL bFlag)
 #define SCAN_VALID_PROCESSKEY 0x01FF0000
 #define SCAN_VALID_TOASCII 0x1FF
 #define VKEY_VALID 0xFFFF
-BOOL WINAPI ImeProcessKey(HIMC hImc, UINT unVitrKey, DWORD unScanCode, CONST LPBYTE	achKeyState)
+BOOL WINAPI ImeProcessKey(HIMC hImc, UINT unVirtKey, DWORD unScanCode, CONST LPBYTE	achKeyState)
 {
 	ImcHandle imcHandle(hImc);
 	Comp* pComp = imcHandle.GetComp();
 	LPTSTR szCompString = pComp->GetCompString();
-	if(_tcslen(szCompString) == 0){
-		if(unVitrKey >= 0x41 && unVitrKey <= 0x5A){
-			return TRUE;
-		}
-	}else{ // _tcslen(szCompString) > 0
-		if(unVitrKey >= 0x41 && unVitrKey <= 0x5A){
-			return TRUE;
-		}else if(unVitrKey == VK_RETURN || unVitrKey == VK_SPACE){
-			return TRUE;
-		}else if(unVitrKey == VK_ESCAPE){
-			return TRUE;
-		}
-	}
+  if (unVirtKey >= 0x41 && unVirtKey <= 0x5A) {
+    return TRUE;    // 从A到Z
+  }
+  if (_tcslen(szCompString) > 0 &&(unVirtKey == VK_RETURN || unVirtKey == VK_SPACE || unVirtKey == VK_ESCAPE)) {
+    return TRUE;  // 当有写作串且当前按键为回车、空格或ESC
+  }
 	return FALSE;
 }
 
