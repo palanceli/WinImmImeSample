@@ -17,7 +17,6 @@ public:
 	void Init();
 	void SetActive(bool b);
 	bool IsActive();
-	void SetConversionStatus(DWORD dwConversionMode, DWORD dwSentenceMode);
 	HWND	GetMainWnd();
 	Comp* GetComp();
 	bool GetFont(LOGFONT& font) const;

@@ -55,14 +55,6 @@ void ImcHandle::SetActive(bool b)
 	m_pContext->fOpen = b;
 }
 
-void ImcHandle::SetConversionStatus(DWORD dwConversionMode, DWORD dwSentenceMode)
-{
-	if(IsNULL())
-		return;
-	m_pContext->fdwConversion = dwConversionMode;
-	m_pContext->fdwSentence = dwSentenceMode;
-}
-
 Comp* ImcHandle::GetComp()
 {
 	ATLASSERT(m_pContext != NULL);

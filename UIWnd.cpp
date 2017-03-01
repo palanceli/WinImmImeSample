@@ -12,16 +12,16 @@ HINSTANCE UIWnd::mhInstance = NULL;
 
 LRESULT CALLBACK UIWnd::UIWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	UIWnd* pUIWnd = (UIWnd*)GetWindowLong(hWnd, GWL_USERDATA);
+	UIWnd* pUIWnd = (UIWnd*)GetWindowLongPtr(hWnd, GWLP_USERDATA);
 	if(pUIWnd == NULL){
 		pUIWnd = new UIWnd();
 		pUIWnd->m_hWnd = hWnd;
 		if(pUIWnd == NULL)
 			return FALSE;
-		SetWindowLong(hWnd, GWL_USERDATA, (LONG)pUIWnd);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, (LONG)pUIWnd);
 	}
 	if(msg == WM_NCDESTROY){
-		SetWindowLong(hWnd, GWL_USERDATA, 0);
+		SetWindowLongPtr(hWnd, GWLP_USERDATA, 0);
 		delete pUIWnd;
 		return DefWindowProc(hWnd, msg, wParam, lParam);
 	}
@@ -34,7 +34,7 @@ HIMC UIWnd::GetHimc()
 	HIMC hImc = (HIMC)GetWindowLong(m_hWnd, IMMGWL_IMC);
 	if(hImc == NULL){
 		hImc = ImmGetContext(m_hWnd);
-		SetWindowLong(m_hWnd, IMMGWL_IMC, (LONG)hImc);
+		SetWindowLongPtr(m_hWnd, IMMGWL_IMC, (LONG)hImc);
 	}
 	return hImc;
 }
@@ -110,11 +110,8 @@ void UIWnd::UnRegisterUIWndClass(HINSTANCE hInstance)
 
 BOOL UIWnd::OnCreate()
 {
-	HIMC hImc = GetHimc();
-	ImcHandle imcHandle(hImc);
-
-	DWORD dwConversion = 0;
-	imcHandle.SetConversionStatus(dwConversion,0);
+	//HIMC hImc = GetHimc();
+	//ImcHandle imcHandle(hImc);
 
   //RECT rect = { 0, 0, 150, 30 };
   //mCompWnd.Create(this, this->GetInstanceHandle(), rect);
