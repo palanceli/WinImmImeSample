@@ -29,8 +29,13 @@ int _tmain(int argc, TCHAR* argv[])
   BOOST_LOG_TRIVIAL(trace) << _T("System dir :") << systemDir;
 
   size_t pos = imePath.rfind('\\');
-  std::wstring imeFileName = imePath.substr(pos);
-
+  std::wstring imeFileName;
+  if (pos != std::wstring::npos) {
+    imeFileName = imePath.substr(pos);
+  }else {
+    imeFileName = imePath;
+  }
+  
   std::wstring imeFilePathInSys = systemDir;
   imeFilePathInSys += imeFileName;
 

@@ -23,7 +23,15 @@ set_target_properties(WinImmImeSample PROPERTIES OUTPUT_NAME "WinImmImeSample" S
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 #静态链接boost，并指定需要的头文件和lib库
-set(Boost_USE_STATIC_LIBS ON) 
+set(BOOST_ROOT "c:/boost_1_62_0")
+
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+  set(Boost_LIBRARY_DIR "${BOOST_ROOT}/stage/lib64")
+elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
+  set(Boost_LIBRARY_DIR "${BOOST_ROOT}/stage/lib32")
+endif()
+
+set(Boost_USE_STATIC_LIBS ON)
 find_package(Boost COMPONENTS program_options log REQUIRED)
 
 if(NOT Boost_FOUND)
