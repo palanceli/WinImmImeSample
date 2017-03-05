@@ -118,7 +118,7 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 	if (HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z') {
 		TCHAR szKey[2] = { HIWORD(unKey), 0 };
 		_tcscat_s(szCompString, Comp::c_MaxCompString, szKey);	// 将字符追加到写作串
-		compCore.dwCompStrLen = _tcslen(szCompString);
+		compCore.dwCompStrLen = (DWORD)_tcslen(szCompString);
 	}
 
 	UINT *pcMsg = (UINT*)(lpdwTransBuf);
@@ -164,7 +164,7 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 		}else if(HIWORD(unKey) == VK_RETURN || HIWORD(unKey) == VK_SPACE){ // 回车或空格
 			LPTSTR szResultString = pComp->GetResultString();
 			_tcscpy_s(szResultString, Comp::c_MaxResultString, szCompString); // 将写作串拷入结果串
-			compCore.dwResultStrLen = _tcslen(szResultString);
+			compCore.dwResultStrLen = (DWORD)_tcslen(szResultString);
 			memset(szCompString, 0, sizeof(TCHAR) * Comp::c_MaxCompString);		// 清空写作串
 			compCore.dwCompStrLen = 0;
 			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗

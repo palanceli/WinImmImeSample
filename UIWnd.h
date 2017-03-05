@@ -5,15 +5,15 @@
 
 #define _DDKIMM_H_
 #include <TCHAR.H>
-//#include "CStatusWnd.h"
-//#include "CCompWnd.h"
+#include "CStatusWnd.h"
+#include "CCompWnd.h"
 
 #define MAX_CLASSNAME_UI	16
 
 class UIWnd
 {
 public:
-	//UIWnd():mStatusWnd(_T("SGDX_STATUSWND")), mCompWnd(_T("SGDX_COMPWND")){}
+  UIWnd():mStatusWnd(_T("SGDX_STATUSWND")), mCompWnd(_T("SGDX_COMPWND")){}
 	static void RegisterUIWndClass(HINSTANCE hInstance);
 	static void UnRegisterUIWndClass(HINSTANCE hInstance);
 	static LPCTSTR GetUIWndClassName(){return _T("xxime");}
@@ -32,8 +32,8 @@ protected:
 protected:
 	bool	IsImeMessage(UINT msg);
 private:
-  //CStatusWnd  mStatusWnd;
-  //CCompWnd    mCompWnd;
+  CStatusWnd  mStatusWnd;
+  CCompWnd    mCompWnd;
 public:
 	HWND		m_hWnd;
   static HINSTANCE mhInstance;

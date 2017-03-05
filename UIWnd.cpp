@@ -6,7 +6,6 @@
 #include "UIWnd.h"
 #include <TCHAR.H>
 #include "ImcHandle.h"
-//#include "log.h"
 
 HINSTANCE UIWnd::mhInstance = NULL;
 
@@ -68,15 +67,15 @@ LRESULT CALLBACK UIWnd::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lPara
 		case WM_CREATE:
 			OnCreate();
 			break;
-		//case WM_IME_STARTCOMPOSITION:
-		//	OnStartComposition();
-		//	return 0;
-		//case WM_IME_COMPOSITION:
-		//	OnComposition(wParam, lParam);
-		//	return 0;
-		//case WM_IME_ENDCOMPOSITION:
-		//	OnEndComposition();
-		//	return 0;
+		case WM_IME_STARTCOMPOSITION:
+			OnStartComposition();
+			return 0;
+		case WM_IME_COMPOSITION:
+			OnComposition(wParam, lParam);
+			return 0;
+		case WM_IME_ENDCOMPOSITION:
+			OnEndComposition();
+			return 0;
 	}
 
 	if(IsImeMessage(msg))
@@ -110,53 +109,48 @@ void UIWnd::UnRegisterUIWndClass(HINSTANCE hInstance)
 
 BOOL UIWnd::OnCreate()
 {
-	//HIMC hImc = GetHimc();
-	//ImcHandle imcHandle(hImc);
+	HIMC hImc = GetHimc();
+	ImcHandle imcHandle(hImc);
 
-  //RECT rect = { 0, 0, 150, 30 };
-  //mCompWnd.Create(this, this->GetInstanceHandle(), rect);
+  RECT rect = { 0, 0, 150, 30 };
+  mCompWnd.Create(this, this->GetInstanceHandle(), rect);
 
-  //mStatusWnd.Create(this, this->GetInstanceHandle(), rect);
-  //int x = ::GetSystemMetrics(SM_CXFULLSCREEN);
-  //int y = ::GetSystemMetrics(SM_CYFULLSCREEN);
-  //RECT rtStatus;
+  mStatusWnd.Create(this, this->GetInstanceHandle(), rect);
+  int x = ::GetSystemMetrics(SM_CXFULLSCREEN);
+  int y = ::GetSystemMetrics(SM_CYFULLSCREEN);
+  RECT rtStatus;
 
-  //CRect rtStatus;
-
-  //::GetWindowRect(mStatusWnd.GetWnd(), &rtStatus);
-  //int cx = rtStatus.right - rtStatus.left;
-  //int cy = rtStatus.bottom - rtStatus.top;
-  //x -= cx;
-  //y -= cy;
-  //::MoveWindow(mStatusWnd.GetWnd(), x, y, cx, cy, TRUE);
-  //::ShowWindow(mStatusWnd.GetWnd(), SW_SHOWNA);
+  ::GetWindowRect(mStatusWnd.GetWnd(), &rtStatus);
+  int cx = rtStatus.right - rtStatus.left;
+  int cy = rtStatus.bottom - rtStatus.top;
+  x -= cx;
+  y -= cy;
+  ::MoveWindow(mStatusWnd.GetWnd(), x, y, cx, cy, TRUE);
+  ::ShowWindow(mStatusWnd.GetWnd(), SW_SHOWNA);
 
 	return TRUE;
 }
 
-//void UIWnd::OnStartComposition()
-//{
-//	LogDebug(_T("UIWnd::OnStartComposition"));
-//	HIMC hImc = GetHimc();
-//	CImcHandle imcHandle(hImc);
-//
-//  mCompWnd.UpdateWindowPos(imcHandle);
-//  ::ShowWindow(mCompWnd.GetWnd(), SW_SHOWNA);
-//}
-//
-//void UIWnd::OnComposition(WPARAM wParam, LPARAM lParam)
-//{
-//	LogDebug(_T("UIWnd::OnComposition"));
-//	HIMC hImc = GetHimc();
-//	CImcHandle imcHandle(hImc);
-//	if(lParam & GCS_COMPSTR){
-//    mCompWnd.UpdateWindowPos(imcHandle);
-//    ::RedrawWindow(mCompWnd.GetWnd(), NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
-//	}
-//}
-//
-//void UIWnd::OnEndComposition()
-//{
-//	LogDebug(_T("UIWnd::OnEndComposition"));
-//  ::ShowWindow(mCompWnd.GetWnd(), SW_HIDE);
-//}
+void UIWnd::OnStartComposition()
+{
+	HIMC hImc = GetHimc();
+	ImcHandle imcHandle(hImc);
+
+  mCompWnd.UpdateWindowPos(imcHandle);
+  ::ShowWindow(mCompWnd.GetWnd(), SW_SHOWNA);
+}
+
+void UIWnd::OnComposition(WPARAM wParam, LPARAM lParam)
+{
+	HIMC hImc = GetHimc();
+	ImcHandle imcHandle(hImc);
+	if(lParam & GCS_COMPSTR){
+    mCompWnd.UpdateWindowPos(imcHandle);
+    ::RedrawWindow(mCompWnd.GetWnd(), NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW | RDW_ERASE);
+	}
+}
+
+void UIWnd::OnEndComposition()
+{
+  ::ShowWindow(mCompWnd.GetWnd(), SW_HIDE);
+}
