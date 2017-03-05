@@ -1,5 +1,5 @@
-rd /s /q build32
-rd /s /q build64
+::rd /s /q build32
+::rd /s /q build64
 mkdir build32
 mkdir build64
 

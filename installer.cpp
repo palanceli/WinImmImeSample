@@ -41,14 +41,15 @@ int _tmain(int argc, TCHAR* argv[])
 
   DWORD dwRetVal = GetTempFileName(systemDir.c_str(), _T("tempime"), 0, szPath);
   if (dwRetVal == 0) {
-    BOOST_LOG_TRIVIAL(error)<<_T("Failed to generate temp file name.\n");
+		DWORD dwError = GetLastError();
+    BOOST_LOG_TRIVIAL(error)<<_T("Failed to generate temp file name.(Error Code=") <<dwError<<_T(")\n");
     return -1;
   }
   std::wstring tempImeFilePath = szPath;
   BOOST_LOG_TRIVIAL(trace) << _T("temp file name:") << tempImeFilePath;
 
   MoveFile(imeFilePathInSys.c_str(), tempImeFilePath.c_str());
-  MoveFileEx(tempImeFilePath.c_str(), NULL, MOVEFILE_COPY_ALLOWED);
+  MoveFileEx(tempImeFilePath.c_str(), NULL, MOVEFILE_DELAY_UNTIL_REBOOT);
 
   BOOST_LOG_TRIVIAL(trace) << _T("[move file]") << imeFilePathInSys << _T("=>") << tempImeFilePath;
   CopyFile(imePath.c_str(), imeFilePathInSys.c_str(), FALSE);
