@@ -16,4 +16,6 @@ void Comp::Init()
 	m_core.dwCompStrOffset = (LPBYTE)m_szCompString - (LPBYTE)(&m_core);
 	//m_core.dwPrivateOffset = (unsigned char *)&m_bLastInput - (unsigned char *)(&m_core);
 	//m_core.dwPrivateSize = (unsigned char *)(&m_core) + sizeof(t_comp) - (unsigned char *)&m_bLastInput;
+  memset(m_szResultString, 0, c_MaxResultString * sizeof(TCHAR));
+  memset(m_szCompString, 0, c_MaxCompString * sizeof(TCHAR));
 }

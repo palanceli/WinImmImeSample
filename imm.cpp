@@ -121,32 +121,32 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 		compCore.dwCompStrLen = (DWORD)_tcslen(szCompString);
 	}
 
-	UINT *pcMsg = (UINT*)(lpdwTransBuf);
-	*pcMsg = 0;
-	lpdwTransBuf += 1;
+  const DWORD dwBufLen = *lpdwTransBuf;
+  lpdwTransBuf += 1;
+	UINT cMsg = 0;
 	if(ccOriginCompLen == 0){  // 没有写作串
 		if(HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z'){
 			lpdwTransBuf[0] = WM_IME_STARTCOMPOSITION;	// 打开写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+			cMsg++;
 			lpdwTransBuf[0] = WM_IME_COMPOSITION;	// 更新写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 打开候选窗
 			lpdwTransBuf[1] = IMN_OPENCANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 更新候选窗
 			lpdwTransBuf[1] = IMN_CHANGECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
-			return *pcMsg;
+      cMsg++;
+			return cMsg;
 		}
 	}else{ // _tcslen(szCompString) > 0			// 有写作串
 		if(HIWORD(unKey) >= 'a' && HIWORD(unKey) <= 'z'){
@@ -154,13 +154,13 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 更新候选窗
 			lpdwTransBuf[1] = IMN_CHANGECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
-			return *pcMsg;
+      cMsg++;
+			return cMsg;
 		}else if(HIWORD(unKey) == VK_RETURN || HIWORD(unKey) == VK_SPACE){ // 回车或空格
 			LPTSTR szResultString = pComp->GetResultString();
 			_tcscpy_s(szResultString, Comp::c_MaxResultString, szCompString); // 将写作串拷入结果串
@@ -171,18 +171,18 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR | GCS_RESULTSTR;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;	// 关闭写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_NOTIFY;				// 关闭候选窗
 			lpdwTransBuf[1] = IMN_CLOSECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
-			return *pcMsg;
+      cMsg++;
+			return cMsg;
 		}else if(HIWORD(unKey) == VK_ESCAPE){	// ESC
 			memset(szCompString, 0, sizeof(TCHAR) * Comp::c_MaxCompString);
 			compCore.dwCompStrLen = 0;
@@ -190,21 +190,21 @@ UINT WINAPI ImeToAsciiEx(UINT unKey, UINT unScanCode, CONST LPBYTE achKeyState, 
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = GCS_COMPSTR;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_ENDCOMPOSITION;	// 关闭写作窗
 			lpdwTransBuf[1] = 0;
 			lpdwTransBuf[2] = 0;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
+      cMsg++;
 			lpdwTransBuf[0] = WM_IME_NOTIFY;			// 关闭候选窗
 			lpdwTransBuf[1] = IMN_CLOSECANDIDATE;
 			lpdwTransBuf[2] = 1;
 			lpdwTransBuf += 3;
-			(*pcMsg)++;
-			return *pcMsg;
+      cMsg++;
+			return cMsg;
 		}
 	}
-	return *pcMsg;
+	return cMsg;
 }
 
 BOOL WINAPI NotifyIME(HIMC hImc, DWORD dwAction, DWORD dwIndex, DWORD dwValue)

@@ -31,7 +31,6 @@ void ImcHandle::Init()
 {
 	ATLASSERT(m_pContext != NULL);
 	if(m_pContext == NULL){
-		//LogWarn(_T("pInputContext is NULL."));
 		return;
 	}
 	m_pContext->hCompStr = ImmReSizeIMCC(m_pContext->hCompStr, sizeof(Comp));
